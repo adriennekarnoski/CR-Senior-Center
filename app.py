@@ -5,8 +5,9 @@ from flask import render_template
 from flask_sqlalchemy import SQLAlchemy
 
 from flask_wtf import FlaskForm
-from wtforms import StringField
+from wtforms import StringField, IntegerField, FloatField, SelectField
 from wtforms.validators import DataRequired
+from sqlalchemy import desc
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
@@ -15,22 +16,14 @@ db = SQLAlchemy(app)
 
 class MyForm(FlaskForm):
     date = StringField('date', validators=[DataRequired()])
-    number = StringField('number', validators=[DataRequired()])
+    number = IntegerField('number', validators=[DataRequired()])
     description = StringField('description', validators=[DataRequired()])
-    amount = StringField('amount', validators=[DataRequired()])
-    cleared = StringField('cleared', validators=[DataRequired()])
+    amount = FloatField('amount', validators=[DataRequired()])
+    cleared = SelectField('cleared', choices=[('YES', 'Yes'), ('NO', 'No')])
+    cleared_date = StringField('cleared_date', validators=[DataRequired()])
 
 
 from models import Checkbook
-
-@app.route('/testing')
-def webhook():
-    description = "ram"
-    amount = "ramramramram"
-    u = Checkbook(description=description, amount=amount)
-    db.session.add(u)
-    db.session.commit()
-    return "user created"
 
 
 @app.route('/')
@@ -48,6 +41,13 @@ def home():
 
 @app.route('/checkbook', methods=['GET', 'POST'])
 def checkbook():
+    transactions = False
+    if len(Checkbook.query.all()) != 0:
+        transactions = True
+        records = Checkbook.query.order_by(desc(Checkbook.id)).all()
+        start = records[0].total
+        total = records[0]
+
     form = MyForm()
     if request.method == 'POST':
         date = request.form['date']
@@ -55,37 +55,49 @@ def checkbook():
         description = request.form['description']
         amount = request.form['amount']
         cleared = request.form['cleared']
-        fieldnames = ['date', 'number', 'description', 'amount', 'cleared']
-        
-    # show the form, it wasn't submitted
-    return render_template('checkbook.html', form=form)
+        if cleared == 'YES':
+            cleared = True
+            cleared_date = request.form['cleared_date']
+        else:
+            cleared = False
+            cleared_date = 'Pending'
+        if transactions:
+            total = start + float(amount)
+        else:
+            total = amount
+        fieldnames = [
+            'date',
+            'number',
+            'description',
+            'amount',
+            'cleared',
+            'cleared_date',
+            ]
+        c = Checkbook(
+            date=date,
+            number=number,
+            description=description,
+            amount=amount,
+            cleared=cleared,
+            cleared_date=cleared_date,
+            total=total,
+            )
+        db.session.add(c)
+        db.session.commit()
+    if transactions:
+        return render_template(
+            'checkbook.html',
+            form=form,
+            records=records,
+            total=total)
+    return render_template(
+        'checkbook.html',
+        form=form,
+        records=None,
+        total=None)
 
-@app.route('/save-comment', methods=['POST'])
-def save_comment():
-    # This is to make sure the HTTP method is POST and not any other
-    if request.method == 'POST':
-        # request.form is a dictionary that contains the form sent through
-        # the HTTP request. This work by getting the name="xxx" attribute of
-        # the html form field. So, if you want to get the name, your input
-        # should be something like this: <input type="text" name="name" />.
-        name = request.form['name']
-        comment = request.form['comment']
-
-        # This array is the fields your csv file has and in the following code
-        # you'll see how it will be used. Change it to your actual csv's fields.
-        fieldnames = ['name', 'comment']
-
-        # We repeat the same step as the reading, but with "w" to indicate
-        # the file is going to be written.
-        with open('nameList.csv','w') as inFile:
-            # DictWriter will help you write the file easily by treating the
-            # csv as a python's class and will allow you to work with
-            # dictionaries instead of having to add the csv manually.
-            writer = csv.DictWriter(inFIle, fieldnames=fieldnames)
-
-            # writerow() will write a row in your csv file
-            writer.writerow({'name': name, 'comment': comment})
-
-        # And you return a text or a template, but if you don't return anything
-        # this code will never work.
-        return 'Thanks for your input!'
+@app.route('/delete')
+def delete():
+    db.session.query(Checkbook).delete()
+    db.session.commit()
+    return 'deleted'

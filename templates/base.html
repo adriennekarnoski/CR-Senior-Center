@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Castle Rock Senior Center</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://cdn.rawgit.com/vast-engineering/jquery-popup-overlay/1.7.13/jquery.popupoverlay.js"></script>
+        <link href="{{url_for('static', filename='reset.css')}}" rel="stylesheet" type="text/css">
+        <link href="{{url_for('static', filename='style.css')}}" rel="stylesheet" type="text/css">
+    </head>
+    <body>
+     <nav>
+        <ul>
+            <li>Stuff</li>
+            <li><a href="{{ url_for('checkbook') }}">Checkbook</a></li>
+            <li>CD</li>
+        </ul>
+     </nav>
+        <main>
+    {% block content %}{% endblock %}
+</main>
+    </body>
+    <script src="{{url_for('static', filename='app.js')}}"></script>
+</html>

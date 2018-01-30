@@ -1,14 +1,9 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Reusable Form Demo</title>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-        <script src="https://cdn.rawgit.com/vast-engineering/jquery-popup-overlay/1.7.13/jquery.popupoverlay.js"></script>
-        <link href="{{url_for('static', filename='style.css')}}" rel="stylesheet" type="text/css">
-    </head>
+{% extends "base.html" %}
+
+{% block content %}
     
-    <h1>Checkbook</h1>
-    <a href="#" id="button">Add New Entry</a>
+    <h1 class="heading">Checkbook</h1>
+    <button id="button">Add New Entry</button>
     <div class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -18,17 +13,40 @@
             {{ form.number.label }} {{ form.number(size=20) }}
             {{ form.description.label }} {{ form.description(size=20) }}
             {{ form.amount.label }} {{ form.amount(size=20) }}
-            {{ form.cleared.label }} 
-            <input type="checkbox" id="cleared_checkbox">
-            <label>Date</label>
-            {{ form.cleared(id='hole')}}
+            {{ form.cleared.label }} {{ form.cleared }}
+            {{ form.cleared_date.label }} {{ form.cleared_date }}
             <input type="submit" value="Go">
             </form>
         </div>
     </div>
     
+    {% if records %}
+    {{ total.total }}
+    <table>
+        <tr>
+            <th>Date</th>
+            <th>Number</th>
+            <th>Description</th>
+            <th>Deposit</th>
+            <th>Withdrawl</th>
+            <th>Cleared</th>
+        </tr>
+{% for item in records %}
+<tr>
+   <td>{{item.date}}</td>
+   <td>{{item.number}}</td>
+   <td>{{item.description}}</td>
+   {% if item.amount > 1 %}
+   <td></td>
+   <td>{{item.amount}}</td>
+   {% else %}
+   <td>{{item.amount}}</td>
+   <td></td>
+   {% endif %}
+   <td>{{item.cleared}}</td>
+</tr>
+{% endfor %}
+</table>
+{% endif %}
   
-  <a href="{{ url_for('home') }}">Check out this cool form!</a>
-    </body>
-    <script src="{{url_for('static', filename='app.js')}}"></script>
-</html>
+{% endblock %}
