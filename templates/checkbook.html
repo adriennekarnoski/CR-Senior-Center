@@ -2,6 +2,7 @@
 
 {% block content %}
     
+    {% block update %}{% endblock %}
     <h1 class="heading">Checkbook</h1>
     <button id="button">Add New Entry</button>
     <div class="modal">
@@ -21,7 +22,7 @@
     </div>
     
     {% if records %}
-    {{ total.total }}
+    <h3>Current Balance: </h3>{{ book_total.total }}
     <table>
         <tr>
             <th>Date</th>
@@ -30,20 +31,26 @@
             <th>Deposit</th>
             <th>Withdrawl</th>
             <th>Cleared</th>
+            <th></th>
         </tr>
 {% for item in records %}
 <tr>
    <td>{{item.date}}</td>
    <td>{{item.number}}</td>
    <td>{{item.description}}</td>
-   {% if item.amount > 1 %}
+   {% if item.amount > 0 %}
    <td></td>
    <td>{{item.amount}}</td>
    {% else %}
    <td>{{item.amount}}</td>
    <td></td>
    {% endif %}
-   <td>{{item.cleared}}</td>
+   {% if item.cleared == True %}
+   <td><i class="fas fa-check"></i></td>
+   {% else %}
+   <td><i class="fas fa-hourglass-half"></i></td>
+   {% endif %}
+   <td>{{item.cleared_date}}</td>
 </tr>
 {% endfor %}
 </table>

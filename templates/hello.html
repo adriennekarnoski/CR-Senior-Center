@@ -1,15 +1,6 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Reusable Form Demo</title>
-    </head>
-    <body>
-        <form method="POST" action="/">
-    {{ form.csrf_token }}
-    {{ form.name.label }} {{ form.name(size=20) }}
-    <input type="submit" value="Go">
-</form>
-  
-  <a href="{{ url_for('cool_form') }}">Check out this cool form!</a>
-    </body>
-</html>
+{% extends "checkbook.html" %}
+
+{% block update %}
+    
+  <h1>Here I am!</h1>
+{% endblock %}

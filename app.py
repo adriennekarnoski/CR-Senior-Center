@@ -1,7 +1,5 @@
-from flask import Flask
+from flask import Flask, redirect, url_for, request, render_template
 import os
-from flask import request
-from flask import render_template
 from flask_sqlalchemy import SQLAlchemy
 
 from flask_wtf import FlaskForm
@@ -46,7 +44,7 @@ def checkbook():
         transactions = True
         records = Checkbook.query.order_by(desc(Checkbook.id)).all()
         start = records[0].total
-        total = records[0]
+        book_total = records[0]
 
     form = MyForm()
     if request.method == 'POST':
@@ -84,17 +82,23 @@ def checkbook():
             )
         db.session.add(c)
         db.session.commit()
+        return redirect(url_for('checkbook'))
     if transactions:
         return render_template(
             'checkbook.html',
             form=form,
             records=records,
-            total=total)
+            book_total=book_total)
     return render_template(
-        'checkbook.html',
-        form=form,
-        records=None,
-        total=None)
+            'checkbook.html',
+            form=form,
+            records=records,
+            book_total=book_total)
+
+@app.route('/update')
+def update():
+    return render_template('hello.html')
+
 
 @app.route('/delete')
 def delete():
