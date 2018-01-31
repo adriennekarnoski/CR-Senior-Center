@@ -1,6 +1,20 @@
-{% extends "checkbook.html" %}
+{% extends "base.html" %}
 
-{% block update %}
-    
-  <h1>Here I am!</h1>
+{% block content %}
+
+
+
+
+    <form method="POST">
+            {{ form.csrf_token }}
+            {{ form.date.label(class="form") }} {{ form.date(size=20, class="form") }}
+            {{ form.number.label }} {{ form.number(size=20) }}
+            {{ form.description.label }} {{ form.description(size=40) }}
+            {{ form.amount.label }} {{ form.amount(size=20) }}
+            {{ form.cleared.label }} {{ form.cleared }}
+            {{ form.cleared_date.label }} {{ form.cleared_date }}
+            <input type="submit" value="Done" name="submit">
+            <input type="submit" value="Add Another" name="submit">
+    </form>
+
 {% endblock %}

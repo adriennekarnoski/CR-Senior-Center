@@ -2,13 +2,17 @@
 
 {% block content %}
     
-    {% block update %}{% endblock %}
     <h1 class="heading">Checkbook</h1>
-    <button id="button">Add New Entry</button>
-    <div class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
+    <button id="button"><a href="{{ url_for('add') }}">Add New Entry</a></button>
+
+    {% block add %}{% endblock %}
+
+    <div class="edit_form">
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+                <a href="{{ url_for('checkbook') }}" class="close">&times;</a>
             <form method="POST">
+                {{ digit }}
             {{ form.csrf_token }}
             {{ form.date.label }} {{ form.date(size=20) }}
             {{ form.number.label }} {{ form.number(size=20) }}
@@ -18,9 +22,22 @@
             {{ form.cleared_date.label }} {{ form.cleared_date }}
             <input type="submit" value="Go">
             </form>
+            </div>
         </div>
     </div>
-    
+
+    <form method="POST">
+            {{ new_form.csrf_token }}
+            {{ new_form.date.label(class="new_form") }} {{ new_form.date(size=20, class="new_form") }}
+            {{ new_form.number.label }} {{ new_form.number(size=20) }}
+            {{ new_form.description.label }} {{ new_form.description(size=40) }}
+            {{ new_form.amount.label }} {{ new_form.amount(size=20) }}
+            {{ new_form.cleared.label }} {{ new_form.cleared }}
+            {{ new_form.cleared_date.label }} {{ new_form.cleared_date }}
+            <input type="submit" value="Done" name="submit">
+            <input type="submit" value="Add Another" name="submit">
+    </form>
+
     {% if records %}
     <h3>Current Balance: </h3>{{ book_total.total }}
     <table>
@@ -28,32 +45,33 @@
             <th>Date</th>
             <th>Number</th>
             <th>Description</th>
-            <th>Deposit</th>
-            <th>Withdrawl</th>
+            <th>Amount</th>
             <th>Cleared</th>
             <th></th>
         </tr>
+    </table>
+    <div class="table_container">
+        <table>
 {% for item in records %}
 <tr>
    <td>{{item.date}}</td>
    <td>{{item.number}}</td>
    <td>{{item.description}}</td>
    {% if item.amount > 0 %}
-   <td></td>
-   <td>{{item.amount}}</td>
+   <td class="withdrawl">{{item.amount}}</td>
    {% else %}
-   <td>{{item.amount}}</td>
-   <td></td>
+   <td class="deposit">{{item.amount}}</td>
    {% endif %}
    {% if item.cleared == True %}
-   <td><i class="fas fa-check"></i></td>
+   <td><i class="fas fa-check"></i> {{item.cleared_date}}</td>
    {% else %}
-   <td><i class="fas fa-hourglass-half"></i></td>
+   <td><i class="fas fa-hourglass-half"></i> {{item.cleared_date}}</td>
    {% endif %}
-   <td>{{item.cleared_date}}</td>
+   <td><a class="update" href="{{ url_for('checkbook', transaction_id=item.id) }}">Edit</a></td>
 </tr>
 {% endfor %}
 </table>
 {% endif %}
+</div>
   
 {% endblock %}

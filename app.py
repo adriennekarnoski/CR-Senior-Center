@@ -37,17 +37,50 @@ def home():
 #     return render_template('hello.html', form=form)
 
 
-@app.route('/checkbook', methods=['GET', 'POST'])
-def checkbook():
+@app.route('/checkbook', methods=['GET'])
+@app.route('/checkbook/<int:transaction_id>', methods=['GET', 'POST'])
+def checkbook(transaction_id=None):
+    new_form = MyForm()
+    form = MyForm()
+    if transaction_id:
+        edit_post = db.session.query(Checkbook).get(transaction_id)
+        form = MyForm(obj=edit_post)
     transactions = False
     if len(Checkbook.query.all()) != 0:
         transactions = True
         records = Checkbook.query.order_by(desc(Checkbook.id)).all()
         start = records[0].total
         book_total = records[0]
+    else:
+        records = None
+        start = None
+        book_total = None
+    if request.method == 'POST':
+        if request.path.split('/')[-1].isdigit():   
+            return render_template(
+                'checkbook.html',
+                digit='yes',
+                form=form,
+                new_form=new_form,
+                records=records,
+                book_total=book_total)
+    return render_template(
+            'checkbook.html',
+            digit=request.path.split('/')[-1],
+            form=form,
+            new_form=new_form,
+            records=records,
+            book_total=book_total)
 
+@app.route('/checkbook/add', methods=['GET', 'POST'])
+def add():
     form = MyForm()
     if request.method == 'POST':
+        transactions = False
+        if len(Checkbook.query.all()) != 0:
+            transactions = True
+            records = Checkbook.query.order_by(desc(Checkbook.id)).all()
+            start = records[0].total
         date = request.form['date']
         number = request.form['number']
         description = request.form['description']
@@ -82,22 +115,18 @@ def checkbook():
             )
         db.session.add(c)
         db.session.commit()
-        return redirect(url_for('checkbook'))
-    if transactions:
-        return render_template(
-            'checkbook.html',
-            form=form,
-            records=records,
-            book_total=book_total)
-    return render_template(
-            'checkbook.html',
-            form=form,
-            records=records,
-            book_total=book_total)
+        if request.form['submit'] == 'Done':
+            return redirect(url_for('checkbook'))
+        if request.form['submit'] == 'Add Another':
+            return redirect(url_for('add'))   
+    return render_template('hello.html', form=form)
 
-@app.route('/update')
-def update():
-    return render_template('hello.html')
+
+@app.route('/update/<int:transaction_id>')
+def update(transaction_id):
+    transaction = db.session.query(Checkbook).get(transaction_id)
+    form = MyForm(obj=transaction)
+    return render_template('hello.html', form=form)
 
 
 @app.route('/delete')

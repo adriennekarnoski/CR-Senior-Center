@@ -1,14 +1,14 @@
 main {
     width: 80%;
     padding-left: 20%;
-    background: #e8edf3;
+    background: #fdfffc;
     height: 100%;
 }
 
 nav {
     width: 20%;
     height: 100%;
-    background: #22264b;
+    background: #011627;
     position: fixed;
 }
 
@@ -30,9 +30,11 @@ nav a {
     color: white;
 }
 
+.edit_form {
+    display: none;
+}
 
 .modal {
-    display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
     z-index: 1; /* Sit on top */
     left: 0;
@@ -59,6 +61,7 @@ nav a {
     float: right;
     font-size: 28px;
     font-weight: bold;
+    text-decoration: none;
 }
 
 .close:hover,
@@ -68,9 +71,14 @@ nav a {
     cursor: pointer;
 }
 
-input[readonly]
-{
-    background-color:blue;
+.form {
+    color:blue;
+    display: block;
+}
+
+.table_container {
+    height: 60vh;
+    overflow: auto;
 }
 
 table {
@@ -79,8 +87,12 @@ table {
 }
 
 th {
-    background: #b56969;
+    background: #2ec4b6;
     color: white;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2
 }
 
 th, td {
@@ -88,8 +100,12 @@ th, td {
     text-align: left;
 }
 
+td svg {
+    padding-right: 20px;
+}
+
 #button {
-    background: #e6cf8b;
+    background: #e71d36;
 }
 
 .heading {
