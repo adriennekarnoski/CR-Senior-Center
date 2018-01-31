@@ -37,7 +37,7 @@ def home():
 #     return render_template('hello.html', form=form)
 
 
-@app.route('/checkbook', methods=['GET'])
+@app.route('/checkbook', methods=['GET', 'POST'])
 @app.route('/checkbook/<int:transaction_id>', methods=['GET', 'POST'])
 def checkbook(transaction_id=None):
     new_form = MyForm()
@@ -56,17 +56,55 @@ def checkbook(transaction_id=None):
         start = None
         book_total = None
     if request.method == 'POST':
-        if request.path.split('/')[-1].isdigit():   
-            return render_template(
-                'checkbook.html',
-                digit='yes',
-                form=form,
-                new_form=new_form,
-                records=records,
-                book_total=book_total)
+        if request.path.split('/')[-1].isdigit():
+            edit_post.date = request.form['date']
+            edit_post.number = request.form['number']
+            edit_post.description = request.form['description']
+            edit_post.amount = request.form['amount']
+            edit_post.cleared = request.form['cleared']
+            if edit_post.cleared == 'YES':
+                edit_post.cleared = True
+                edit_post.cleared_date = request.form['cleared_date']
+            else:
+                edit_post.cleared = False
+                edit_post.cleared_date = 'Pending'
+            if transactions:
+                edit_post.total = start + float(edit_post.amount)
+            else:
+                edit_post.total = edit_post.amount
+            db.session.commit()
+            return redirect('checkbook')
+        if request.path.split('/')[-1] == 'checkbook':
+            date = request.form['date']
+            number = request.form['number']
+            description = request.form['description']
+            amount = request.form['amount']
+            cleared = request.form['cleared']
+            if cleared == 'YES':
+                cleared = True
+                cleared_date = request.form['cleared_date']
+            else:
+                cleared = False
+                cleared_date = 'Pending'
+            if transactions:
+                total = start + float(amount)
+            else:
+                total = amount
+            c = Checkbook(
+                date=date,
+                number=number,
+                description=description,
+                amount=amount,
+                cleared=cleared,
+                cleared_date=cleared_date,
+                total=total,
+                )
+            db.session.add(c)
+            db.session.commit()
+            return redirect(url_for('checkbook'))
     return render_template(
             'checkbook.html',
-            digit=request.path.split('/')[-1],
+            path=request.path.split('/')[-1],
             form=form,
             new_form=new_form,
             records=records,
