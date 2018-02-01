@@ -1,7 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-    <h1>Home</h1>
-    
+<section class="home_container">
+    <div class="thing home_small">
+        {{ book_total }}
+        {{ transactions }}
+        {{ cleared }}
+        {{ deposits }}
+        {{ pending}}
+    </div>
+    <div class="home_checkbook home_small">
+        <h2 class="sub-heading">Checkbook</h2>
+        {{ book_total }}
+        {{ transactions }}
+        {{ cleared }}
+        {{ deposits }}
+        {{ pending}}
+    </div>
+    <div class="home_cd home_small">
+    </div>
+  </section>  
 {% endblock %}

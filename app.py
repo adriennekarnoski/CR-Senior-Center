@@ -17,7 +17,7 @@ class MyForm(FlaskForm):
     number = IntegerField('number', validators=[DataRequired()])
     description = StringField('description', validators=[DataRequired()])
     amount = FloatField('amount', validators=[DataRequired()])
-    cleared = SelectField('cleared', choices=[('YES', 'Yes'), ('NO', 'No')])
+    cleared = SelectField('cleared', choices=[('NO', 'No'), ('YES', 'Yes')])
     cleared_date = StringField('cleared_date', validators=[DataRequired()])
 
 
@@ -26,7 +26,26 @@ from models import Checkbook
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    records = Checkbook.query.order_by(desc(Checkbook.id)).all()
+    book_total = records[0].total
+    transactions = len(records)
+    cleared = 0
+    deposits = 0
+    pending = 0
+    for item in records:
+        if item.cleared:
+            cleared += 1
+        if item.amount > 0:
+            deposits += 1
+        if item.cleared_date == 'Pending':
+            pending += 1
+    return render_template(
+        'index.html',
+        book_total=book_total,
+        transactions=transactions,
+        cleared=cleared,
+        deposits=deposits,
+        pending=pending)
 
 
 # @app.route('/')

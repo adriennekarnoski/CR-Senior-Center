@@ -3,10 +3,7 @@
 {% block content %}
     
     <h1 class="heading">Checkbook</h1>
-    <button id="button"><a href="{{ url_for('add') }}">Add New Entry</a></button>
 
-    {% block add %}{% endblock %}
- {{ path }}
     <div class="edit_form">
         <div id="myModal" class="modal">
             <div class="modal-content">
@@ -25,41 +22,25 @@
         </div>
     </div>
 
-<div class="tab">
-  <button class="tablinks" id="add">London</button>
-  <button class="tablinks" id="two">Paris</button>
-  <button class="tablinks" id="three">Tokyo</button>
-</div>
 
+  <div class="add_header"><span class="add_icon"><i class="fas fa-plus"></i></span><h2>Add New Entry</h2></div>
 
-<div id="add_content" class="tabcontent">
-  <h3>London</h3>
-  <p>London is the capital city of England.</p>
-</div>
-
-<div id="two_content" class="tabcontent">
-  <h3>Paris</h3>
-  <p>Paris is the capital of France.</p> 
-</div>
-
-<div id="three_content" class="tabcontent">
-  <h3>Tokyo</h3>
-  <p>Tokyo is the capital of Japan.</p>
-</div>
-
-    <form method="POST">
+<section class="add_container">
+    <form method="POST" id="new_form">
             {{ new_form.csrf_token }}
-            {{ new_form.date.label(class="new_form") }} {{ new_form.date(size=20, class="new_form") }}
-            {{ new_form.number.label }} {{ new_form.number(size=20) }}
-            {{ new_form.description.label }} {{ new_form.description(size=40) }}
-            {{ new_form.amount.label }} {{ new_form.amount(size=20) }}
-            {{ new_form.cleared.label }} {{ new_form.cleared }}
-            {{ new_form.cleared_date.label }} {{ new_form.cleared_date }}
-            <input type="submit" value="Go">
+            <span class="input_span">{{ new_form.date.label }} {{ new_form.date }}
+            {{ new_form.number.label }} {{ new_form.number }}</span>
+            <span class="input_span">{{ new_form.description.label }} {{ new_form.description }}</span>
+            <span class="input_span">{{ new_form.amount.label }} {{ new_form.amount }}</span>
+            <span class="input_span">{{ new_form.cleared.label }} {{ new_form.cleared }}
+            {{ new_form.cleared_date.label }} {{ new_form.cleared_date(id="date_field") }}</span>
+            <span><input type="submit" value="Submit" id="add_button"></span>
     </form>
+</section>
+
+
 
     {% if records %}
-    <h3>Current Balance: </h3>{{ book_total.total }}
     <table>
         <tr>
             <th>Date</th>
