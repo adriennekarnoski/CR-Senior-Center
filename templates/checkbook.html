@@ -16,7 +16,7 @@
             {{ form.amount.label }} {{ form.amount(size=20) }}
             {{ form.cleared.label }} {{ form.cleared }}
             {{ form.cleared_date.label }} {{ form.cleared_date }}
-            <input type="submit" value="Go">
+            <input type="submit" value="Go" id="add_button">
             </form>
             </div>
         </div>
@@ -39,7 +39,7 @@
 </section>
 
 
-
+<section class="table">
     {% if records %}
     <table>
         <tr>
@@ -74,5 +74,5 @@
 </table>
 {% endif %}
 </div>
-  
+  </section>
 {% endblock %}

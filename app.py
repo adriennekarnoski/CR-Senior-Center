@@ -48,14 +48,6 @@ def home():
         pending=pending)
 
 
-# @app.route('/')
-# def submit():
-#     form = MyForm()
-#     if form.validate_on_submit():
-#         return redirect('/success')
-#     return render_template('hello.html', form=form)
-
-
 @app.route('/checkbook', methods=['GET', 'POST'])
 @app.route('/checkbook/<int:transaction_id>', methods=['GET', 'POST'])
 def checkbook(transaction_id=None):
